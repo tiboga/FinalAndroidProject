@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">FinalProject</string>
+    <string name="hello">Добро Пожаловать!</string>
+    <string name="invitation_to_login_or_reg">Зарегистрируйтесь или войдите в аккаунт</string>
+    <string name="invitation_to_reg">Зарегистрироватья</string>
+    <string name="or">ИЛИ</string>
+    <string name="invitation_to_login">Войти</string>
+</resources>

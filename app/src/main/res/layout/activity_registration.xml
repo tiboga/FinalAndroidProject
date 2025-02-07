@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#2A2A2A"
+    tools:context=".Registration">
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="100dp"
+        android:background="@drawable/linear_layout_reg_login"
+        android:gravity="center_horizontal|center_vertical"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView6"
+        tools:layout_editor_absoluteX="1dp">
+
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="30sp" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="84dp"
+            android:text="Регистрация"
+            android:textAlignment="center"
+            android:textSize="50sp"
+            android:textStyle="bold" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="15sp" />
+
+        <TextView
+            android:id="@+id/err"
+            android:layout_width="match_parent"
+            android:layout_height="25sp"
+            android:gravity="center"
+            android:textColor="#FF0000" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="10sp" />
+
+        <EditText
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="40sp"
+            android:layout_gravity="center"
+            android:background="@drawable/rounded_textview"
+            android:ems="10"
+            android:gravity="center"
+            android:hapticFeedbackEnabled="true"
+            android:hint="Логин"
+            android:inputType="textEmailAddress"
+            android:textColorHint="#434343" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20sp" />
+
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="wrap_content"
+            android:layout_height="40sp"
+            android:layout_gravity="center"
+            android:background="@drawable/rounded_textview"
+            android:ems="10"
+
+            android:gravity="center"
+            android:hint="Пароль"
+
+            android:inputType="textPassword"
+            android:textColorHint="#434343" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20sp" />
+
+        <Button
+            android:id="@+id/to_city"
+            android:layout_width="210sp"
+            android:layout_height="40sp"
+            android:layout_gravity="center"
+            android:background="@drawable/rounded_textview"
+            android:ems="10"
+            android:gravity="center"
+            android:text="Выбрать город"
+            android:textColor="#FFF"
+            android:textSize="16sp"
+            app:backgroundTint="@color/green_button" />
+
+        <TextView
+            android:id="@+id/text_obl"
+            android:layout_width="match_parent"
+            android:layout_height="20sp"
+            android:gravity="center"
+            android:text="Здесь будет Ваш выбранный город"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/submit"
+            android:layout_width="210sp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_textview"
+            android:text="Зарегистрироваться"
+            android:textSize="16sp"
+            app:backgroundTint="@color/green_button" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/to_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_button"
+        android:text="Есть аккаунт? Войти"
+        app:backgroundTint="@color/green_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout2" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="299dp"
+        android:layout_height="89dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="79dp"
+        android:text="Чистый"
+        android:textColor="#FFF"
+        android:textSize="80sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="226dp"
+        android:layout_height="97dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="20dp"
+        android:text="Город"
+        android:textColor="#35682D"
+        android:textSize="80sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+    <Button
+        android:id="@+id/onmain"
+        android:layout_width="135dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/onmain"
+        android:gravity="center"
+        android:text="на главную"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
