@@ -6,17 +6,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#2A2A2A"
-    tools:context=".ZakTasks">
+    tools:context=".EndedZakTasks">
 
 
     <Button
-        android:id="@+id/ended_tasks"
+        android:id="@+id/not_ended_tasks"
         android:layout_width="235dp"
         android:layout_height="51dp"
         android:layout_marginTop="5dp"
         android:background="@drawable/onmain"
         android:gravity="center"
-        android:text="выполненные заявки"
+        android:text="невыполненные заявки"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"

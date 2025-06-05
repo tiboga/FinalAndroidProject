@@ -13,7 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.yandex.mapkit.MapKitFactory;
 
 public class MainActivity extends AppCompatActivity {
-    Button login, registration, hello, placemark, toglobalmain;
+    Button login, registration, hello, placemark, to_global_main, to_search_tasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
         registration = findViewById(R.id.registration);
         hello = findViewById(R.id.hello);
         placemark = findViewById(R.id.place_on_map);
-        toglobalmain = findViewById(R.id.toglobalmain);
+        to_global_main = findViewById(R.id.toglobalmain);
+        to_search_tasks = findViewById(R.id.tosearchtasks);
         login.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, Login.class);
             startActivity(intent);
@@ -46,8 +47,12 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, Hello.class);
             startActivity(intent);
         });
-        toglobalmain.setOnClickListener(v -> {
+        to_global_main.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, MainGlobal.class);
+            startActivity(intent);
+        });
+        to_search_tasks.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SearchTaskToVolunteer.class);
             startActivity(intent);
         });
 

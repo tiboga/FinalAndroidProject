@@ -32,8 +32,9 @@
             android:layout_height="84dp"
             android:text="Добавление задачи"
             android:textAlignment="center"
+            android:textColor="#000"
             android:textSize="40sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <Space
             android:layout_width="match_parent"
@@ -50,6 +51,7 @@
             android:hapticFeedbackEnabled="true"
             android:hint="Описание"
             android:inputType="textEmailAddress"
+            android:textColor="#000"
             android:textColorHint="#434343" />
 
         <Space

@@ -27,33 +27,23 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
-public class VolunteerTasks extends AppCompatActivity {
-    Button onmain, add_new_task, on_ended;
+public class SearchTaskToVolunteer extends AppCompatActivity {
+    Button onmain;
     RecyclerView list_of_task;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_volunteer_tasks);
+        setContentView(R.layout.activity_search_task_to_volunteer);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
-        });
-        add_new_task = findViewById(R.id.add_new_task);
-        add_new_task.setOnClickListener(v -> {
-            startActivity(new Intent(VolunteerTasks.this, SearchTaskToVolunteer.class));
         });
         list_of_task = findViewById(R.id.list_of_tasks);
         list_of_task.setLayoutManager(new LinearLayoutManager(this));
@@ -66,6 +56,7 @@ public class VolunteerTasks extends AppCompatActivity {
             jsonObject.put("ended", true);
             jsonObject.put("created_on", "0000");
             jsonObject.put("username", "Не указано");
+            jsonObject.put("formatted_address", "Нема");
             JSONArray data_init = new JSONArray();
             data_init.put(0, jsonObject);
             MyAdapter adapter_init = new MyAdapter(data_init);
@@ -78,9 +69,7 @@ public class VolunteerTasks extends AppCompatActivity {
             String uid = String.valueOf(sharedPreferences.getInt("user_id", -1));
             URL url = null;
             try {
-                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_volunteer_task"
-                        + "?uid=" + URLEncoder.encode(uid, "UTF-8")
-                        + "&ended=" + URLEncoder.encode("false", "UTF-8")
+                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/search_tasks_for_volunteer"
                 );
                 Log.d("url", url.toString());
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -113,23 +102,59 @@ public class VolunteerTasks extends AppCompatActivity {
         }).start();
         onmain = findViewById(R.id.onmain);
         onmain.setOnClickListener(v -> {
-            startActivity(new Intent(VolunteerTasks.this, MainGlobal.class));
-        });
-        on_ended = findViewById(R.id.ended_tasks);
-        on_ended.setOnClickListener(v -> {
-            startActivity(new Intent(VolunteerTasks.this, EndedVolunteerTasks.class));
+            startActivity(new Intent(SearchTaskToVolunteer.this, MainGlobal.class));
         });
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView textView;
-        Button button, check_ended;
+        TextView textView, taskPlace;
+        Button button, add_task;
         JSONArray data;
 
-        public MyViewHolder(View itemView, JSONArray data) {
+        public MyViewHolder(@NonNull View itemView, JSONArray data) {
             super(itemView);
             this.data = data;
             textView = itemView.findViewById(R.id.textView);
+            taskPlace = itemView.findViewById(R.id.tasksPlace);
+            add_task = itemView.findViewById(R.id.add);
+            add_task.setOnClickListener(v -> {
+                new Thread(() -> {
+                    try {
+                        int position = getAdapterPosition();
+                        JSONObject elem = data.getJSONObject(position);
+                        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+                        String uid = String.valueOf(sharedPreferences.getInt("user_id", -1));
+                        URL url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/add_task_to_user" +
+                                "?item_id=" + URLEncoder.encode(String.valueOf(elem.getInt("id")), "UTF-8") +
+                                "&user_id=" + URLEncoder.encode(uid, "UTF-8"));
+                        Log.d("url connection", url.toString());
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        conn.setRequestMethod("POST");
+                        conn.setRequestProperty("Accept", "application/json");
+                        conn.connect();
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String line;
+                        StringBuilder response = new StringBuilder();
+
+                        while ((line = reader.readLine()) != null) {
+                            response.append(line);
+                        }
+                        reader.close();
+                        JSONObject json = new JSONObject(response.toString());
+                        Log.d("Status request", json.getString("Status"));
+
+                        if (json.getString("Status").equals("ok")) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(SearchTaskToVolunteer.this, "Задача добавлена", Toast.LENGTH_SHORT).show();
+                            });
+                        } else {
+                            runOnUiThread(() -> Toast.makeText(SearchTaskToVolunteer.this, "Что-то пошло не так", Toast.LENGTH_SHORT).show());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+            });
             button = itemView.findViewById(R.id.button);
             button.setOnClickListener(v -> {
                 int position = getAdapterPosition();
@@ -150,55 +175,6 @@ public class VolunteerTasks extends AppCompatActivity {
                     }
                 }
             });
-            check_ended = itemView.findViewById(R.id.check_ended);
-            check_ended.setOnClickListener(
-                    v -> {
-                        new Thread(() -> {
-                            URL url = null;
-                            int position = getAdapterPosition();
-                            if (position != RecyclerView.NO_POSITION) {
-                                try {
-                                    JSONObject elem = data.getJSONObject(position);
-                                    try {
-                                        url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/check_task"
-                                                + "?task_id=" + URLEncoder.encode(elem.getString("id"), "UTF-8")
-                                        );
-                                        Log.d("url", url.toString());
-                                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                                        conn.setRequestMethod("POST");
-                                        conn.setRequestProperty("Accept", "application/json");
-                                        conn.connect();
-                                        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                                        String line;
-                                        StringBuilder response = new StringBuilder();
-                                        while ((line = reader.readLine()) != null) {
-                                            response.append(line);
-                                        }
-                                        reader.close();
-                                        JSONObject json = new JSONObject(response.toString());
-                                        Log.d("Status request", json.getString("Status"));
-
-                                        if (json.getString("Status").equals("ok")) {
-                                            runOnUiThread(() -> {
-                                                Toast.makeText(VolunteerTasks.this, "Вы пометили свою задачу выполненной", Toast.LENGTH_SHORT).show();
-                                                });
-                                        } else {
-                                            runOnUiThread(() -> {
-                                                Toast.makeText(itemView.getContext(), "Что-то пошло не так. Попробуйте позже", Toast.LENGTH_SHORT).show();
-                                            });
-                                        }
-                                    } catch (JSONException | IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-                        }
-                        ).start();
-                    }
-            );
         }
     }
 
@@ -212,8 +188,8 @@ public class VolunteerTasks extends AppCompatActivity {
         @NonNull
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_of_volunteer_task_list, parent, false);
-            return new VolunteerTasks.MyViewHolder(view, data);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_of_task_search_list, parent, false);
+            return new MyViewHolder(view, data);
         }
 
         @Override
@@ -222,6 +198,7 @@ public class VolunteerTasks extends AppCompatActivity {
             try {
                 JSONObject elem = data.getJSONObject(position);
                 holder.textView.setText(elem.getString("note"));
+                holder.taskPlace.setText(elem.getString("formatted_address"));
 
             } catch (JSONException e) {
                 throw new RuntimeException(e);

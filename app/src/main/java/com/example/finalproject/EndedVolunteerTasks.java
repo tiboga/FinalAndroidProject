@@ -37,15 +37,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class VolunteerTasks extends AppCompatActivity {
-    Button onmain, add_new_task, on_ended;
+public class EndedVolunteerTasks extends AppCompatActivity {
+    Button onmain, add_new_task;
     RecyclerView list_of_task;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_volunteer_tasks);
+        setContentView(R.layout.activity_ended_volunteer_tasks);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -53,7 +53,7 @@ public class VolunteerTasks extends AppCompatActivity {
         });
         add_new_task = findViewById(R.id.add_new_task);
         add_new_task.setOnClickListener(v -> {
-            startActivity(new Intent(VolunteerTasks.this, SearchTaskToVolunteer.class));
+            startActivity(new Intent(EndedVolunteerTasks.this, SearchTaskToVolunteer.class));
         });
         list_of_task = findViewById(R.id.list_of_tasks);
         list_of_task.setLayoutManager(new LinearLayoutManager(this));
@@ -80,7 +80,7 @@ public class VolunteerTasks extends AppCompatActivity {
             try {
                 url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_volunteer_task"
                         + "?uid=" + URLEncoder.encode(uid, "UTF-8")
-                        + "&ended=" + URLEncoder.encode("false", "UTF-8")
+                        + "&ended=" + URLEncoder.encode("true", "UTF-8")
                 );
                 Log.d("url", url.toString());
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -113,11 +113,7 @@ public class VolunteerTasks extends AppCompatActivity {
         }).start();
         onmain = findViewById(R.id.onmain);
         onmain.setOnClickListener(v -> {
-            startActivity(new Intent(VolunteerTasks.this, MainGlobal.class));
-        });
-        on_ended = findViewById(R.id.ended_tasks);
-        on_ended.setOnClickListener(v -> {
-            startActivity(new Intent(VolunteerTasks.this, EndedVolunteerTasks.class));
+            startActivity(new Intent(EndedVolunteerTasks.this, MainGlobal.class));
         });
     }
 
@@ -180,8 +176,8 @@ public class VolunteerTasks extends AppCompatActivity {
 
                                         if (json.getString("Status").equals("ok")) {
                                             runOnUiThread(() -> {
-                                                Toast.makeText(VolunteerTasks.this, "Вы пометили свою задачу выполненной", Toast.LENGTH_SHORT).show();
-                                                });
+                                                Toast.makeText(EndedVolunteerTasks.this, "Вы пометили свою задачу выполненной", Toast.LENGTH_SHORT).show();
+                                            });
                                         } else {
                                             runOnUiThread(() -> {
                                                 Toast.makeText(itemView.getContext(), "Что-то пошло не так. Попробуйте позже", Toast.LENGTH_SHORT).show();
@@ -213,7 +209,7 @@ public class VolunteerTasks extends AppCompatActivity {
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_of_volunteer_task_list, parent, false);
-            return new VolunteerTasks.MyViewHolder(view, data);
+            return new EndedVolunteerTasks.MyViewHolder(view, data);
         }
 
         @Override

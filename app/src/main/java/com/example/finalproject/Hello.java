@@ -24,7 +24,7 @@ public class Hello extends AppCompatActivity {
         });
         onmain = findViewById(R.id.onmain);
         onmain.setOnClickListener(v -> {
-            Intent intent = new Intent(Hello.this, MainActivity.class);
+            Intent intent = new Intent(Hello.this, MainGlobal.class);
             startActivity(intent);
         });
         registry = findViewById(R.id.registry);

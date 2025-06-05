@@ -40,6 +40,12 @@
             android:id="@+id/toglobalmain"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="НА главную" />
+            android:text="На главную" />
+
+        <Button
+            android:id="@+id/tosearchtasks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="На поиск задач" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

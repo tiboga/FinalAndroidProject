@@ -16,8 +16,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        >
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/textView2"
@@ -25,18 +24,22 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
+            android:paddingStart="30dp"
             android:text="Главная"
+            android:textAlignment="textStart"
             android:textColor="#000"
             android:textSize="48sp" />
 
         <ImageButton
-            android:id="@+id/imageButton2"
-            android:layout_width="75sp"
-            android:layout_height="75sp"
-            android:layout_weight="0.25"
-            android:backgroundTint="#00D5EBD5"
+            android:id="@+id/exit"
+            android:layout_width="0dp"
+            android:layout_height="25dp"
+            android:layout_weight="0.5"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="#D6EDD6"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/img" />
+            app:srcCompat="@drawable/exit" />
 
     </LinearLayout>
 
@@ -51,6 +54,7 @@
         <Space
             android:layout_width="match_parent"
             android:layout_height="100sp"/>
+
         <TextView
             android:id="@+id/textView9"
             android:layout_width="match_parent"
@@ -60,8 +64,17 @@
             android:layout_marginEnd="24dp"
             android:backgroundTint="#FFFFFF"
             android:text="Запросов за сегодня:"
+            android:textAlignment="center"
             android:textColor="#FFFFFF"
-            android:textSize="24sp" />
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/today_task_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textColor="#4CAF50"
+            android:textSize="40sp" />
 
         <Space
             android:layout_width="match_parent"
@@ -82,7 +95,7 @@
             android:layout_height="10sp" />
 
         <TextView
-            android:id="@+id/textView10"
+            android:id="@+id/vol_tasks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -120,18 +133,18 @@
             android:layout_height="10sp" />
 
         <TextView
-            android:id="@+id/textView13"
+            android:id="@+id/zak_tasks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Невыполненных заявок:"
+            android:text="Добавленных заявок:"
             android:textColor="#FFFFFF"
             android:textSize="20sp" />
         <Space
             android:layout_width="match_parent"
             android:layout_height="20sp" />
         <Button
-            android:id="@+id/zak_tasks"
+            android:id="@+id/zak_task"
             android:layout_gravity="center"
             android:layout_width="250sp"
             android:layout_height="wrap_content"

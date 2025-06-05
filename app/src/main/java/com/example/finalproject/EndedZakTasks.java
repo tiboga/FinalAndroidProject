@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,25 +28,19 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
-public class VolunteerTasks extends AppCompatActivity {
-    Button onmain, add_new_task, on_ended;
+public class EndedZakTasks extends AppCompatActivity {
+    Button onmain, add_new_task,notendedtasks;
     RecyclerView list_of_task;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_volunteer_tasks);
+        setContentView(R.layout.activity_ended_zak_tasks);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -53,13 +48,12 @@ public class VolunteerTasks extends AppCompatActivity {
         });
         add_new_task = findViewById(R.id.add_new_task);
         add_new_task.setOnClickListener(v -> {
-            startActivity(new Intent(VolunteerTasks.this, SearchTaskToVolunteer.class));
+            startActivity(new Intent(EndedZakTasks.this, AddTask.class));
         });
         list_of_task = findViewById(R.id.list_of_tasks);
         list_of_task.setLayoutManager(new LinearLayoutManager(this));
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("id", -1);
             jsonObject.put("note", "Загружается");
             jsonObject.put("coord_1", 0.0);
             jsonObject.put("coord_2", 0.0);
@@ -78,9 +72,9 @@ public class VolunteerTasks extends AppCompatActivity {
             String uid = String.valueOf(sharedPreferences.getInt("user_id", -1));
             URL url = null;
             try {
-                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_volunteer_task"
+                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_user_task"
                         + "?uid=" + URLEncoder.encode(uid, "UTF-8")
-                        + "&ended=" + URLEncoder.encode("false", "UTF-8")
+                        + "&ended=" + URLEncoder.encode("true", "UTF-8")
                 );
                 Log.d("url", url.toString());
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -113,23 +107,25 @@ public class VolunteerTasks extends AppCompatActivity {
         }).start();
         onmain = findViewById(R.id.onmain);
         onmain.setOnClickListener(v -> {
-            startActivity(new Intent(VolunteerTasks.this, MainGlobal.class));
+            startActivity(new Intent(EndedZakTasks.this, MainGlobal.class));
         });
-        on_ended = findViewById(R.id.ended_tasks);
-        on_ended.setOnClickListener(v -> {
-            startActivity(new Intent(VolunteerTasks.this, EndedVolunteerTasks.class));
+        notendedtasks = findViewById(R.id.not_ended_tasks);
+        notendedtasks.setOnClickListener(v -> {
+            startActivity(new Intent(EndedZakTasks.this, ZakTasks.class));
         });
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
-        Button button, check_ended;
+        ImageView image;
+        Button button;
         JSONArray data;
 
-        public MyViewHolder(View itemView, JSONArray data) {
+        public MyViewHolder(@NonNull View itemView, JSONArray data) {
             super(itemView);
             this.data = data;
             textView = itemView.findViewById(R.id.textView);
+            image = itemView.findViewById(R.id.imageView);
             button = itemView.findViewById(R.id.button);
             button.setOnClickListener(v -> {
                 int position = getAdapterPosition();
@@ -150,55 +146,6 @@ public class VolunteerTasks extends AppCompatActivity {
                     }
                 }
             });
-            check_ended = itemView.findViewById(R.id.check_ended);
-            check_ended.setOnClickListener(
-                    v -> {
-                        new Thread(() -> {
-                            URL url = null;
-                            int position = getAdapterPosition();
-                            if (position != RecyclerView.NO_POSITION) {
-                                try {
-                                    JSONObject elem = data.getJSONObject(position);
-                                    try {
-                                        url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/check_task"
-                                                + "?task_id=" + URLEncoder.encode(elem.getString("id"), "UTF-8")
-                                        );
-                                        Log.d("url", url.toString());
-                                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                                        conn.setRequestMethod("POST");
-                                        conn.setRequestProperty("Accept", "application/json");
-                                        conn.connect();
-                                        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                                        String line;
-                                        StringBuilder response = new StringBuilder();
-                                        while ((line = reader.readLine()) != null) {
-                                            response.append(line);
-                                        }
-                                        reader.close();
-                                        JSONObject json = new JSONObject(response.toString());
-                                        Log.d("Status request", json.getString("Status"));
-
-                                        if (json.getString("Status").equals("ok")) {
-                                            runOnUiThread(() -> {
-                                                Toast.makeText(VolunteerTasks.this, "Вы пометили свою задачу выполненной", Toast.LENGTH_SHORT).show();
-                                                });
-                                        } else {
-                                            runOnUiThread(() -> {
-                                                Toast.makeText(itemView.getContext(), "Что-то пошло не так. Попробуйте позже", Toast.LENGTH_SHORT).show();
-                                            });
-                                        }
-                                    } catch (JSONException | IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-                        }
-                        ).start();
-                    }
-            );
         }
     }
 
@@ -212,8 +159,8 @@ public class VolunteerTasks extends AppCompatActivity {
         @NonNull
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_of_volunteer_task_list, parent, false);
-            return new VolunteerTasks.MyViewHolder(view, data);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_of_task_list, parent, false);
+            return new MyViewHolder(view, data);
         }
 
         @Override
@@ -222,7 +169,9 @@ public class VolunteerTasks extends AppCompatActivity {
             try {
                 JSONObject elem = data.getJSONObject(position);
                 holder.textView.setText(elem.getString("note"));
-
+                if (elem.getBoolean("ended")) {
+                    holder.image.setImageResource(R.drawable.ok);
+                }
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }

@@ -31,6 +31,7 @@
             android:layout_height="84dp"
             android:text="Регистрация"
             android:textAlignment="center"
+            android:textColor="#000000"
             android:textSize="50sp"
             android:textStyle="bold" />
 
@@ -60,6 +61,7 @@
             android:hapticFeedbackEnabled="true"
             android:hint="Логин"
             android:inputType="textEmailAddress"
+            android:textColor="#000000"
             android:textColorHint="#434343" />
 
         <Space
@@ -78,6 +80,7 @@
             android:hint="Пароль"
 
             android:inputType="textPassword"
+            android:textColor="#000000"
             android:textColorHint="#434343" />
 
         <Space
@@ -103,6 +106,7 @@
             android:layout_height="20sp"
             android:gravity="center"
             android:text="Здесь будет Ваш выбранный город"
+            android:textColor="#000000"
             android:textSize="11sp" />
 
         <Button
@@ -152,17 +156,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
-    <Button
-        android:id="@+id/onmain"
-        android:layout_width="135dp"
-        android:layout_height="51dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:background="@drawable/onmain"
-        android:gravity="center"
-        android:text="на главную"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

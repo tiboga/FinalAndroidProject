@@ -23,7 +23,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 public class Login extends AppCompatActivity {
-    Button onmain, to_registration, submit;
+    Button to_registration, submit;
     EditText login, password;
 
     @Override
@@ -36,11 +36,7 @@ public class Login extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        onmain = findViewById(R.id.onmain);
-        onmain.setOnClickListener(v -> {
-            Intent intent = new Intent(Login.this, MainActivity.class);
-            startActivity(intent);
-        });
+
         to_registration = findViewById(R.id.to_registration);
         to_registration.setOnClickListener(v -> {
             Intent intent = new Intent(Login.this, Registration.class);
@@ -79,7 +75,7 @@ public class Login extends AppCompatActivity {
                             }
                             editor.apply();
                             Toast.makeText(this, "Вход успешен", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(Login.this, MainActivity.class);
+                            Intent intent = new Intent(Login.this, MainGlobal.class);
                             startActivity(intent);
                         });
                     } else if (jsonObject.getString("Error").equals("username is not exists")) {

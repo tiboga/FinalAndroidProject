@@ -1,5 +1,3 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
 }
@@ -14,7 +12,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("String", "IP_PC", "\"172.16.19.138\"")
+        buildConfigField("String", "IP_PC", "\"192.168.0.109\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures {
@@ -36,7 +34,8 @@ android {
 }
 
 dependencies {
-    implementation("com.yandex.android:maps.mobile:4.10.1-full")
+    implementation(libs.maps.mobile)
+    implementation(libs.material.v1110)
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

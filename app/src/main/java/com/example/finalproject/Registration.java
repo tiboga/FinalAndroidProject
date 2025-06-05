@@ -43,14 +43,17 @@ public class Registration extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        String uid = String.valueOf(sharedPreferences.getInt("user_id", -1));
+        if (Integer.parseInt(uid) != -1){
+            startActivity(new Intent(Registration.this, MainGlobal.class));
+        }
         to_city = findViewById(R.id.to_city);
         to_login = findViewById(R.id.to_login);
         login = findViewById(R.id.text);
         password = findViewById(R.id.password);
         city_name = findViewById(R.id.text_obl);
-        onmain = findViewById(R.id.onmain);
-        submit = findViewById(R.id.submit);
+            submit = findViewById(R.id.submit);
         err = findViewById(R.id.err);
         to_city.setOnClickListener(v -> {
             Intent intent = new Intent(Registration.this, SelectPlaceOnMap.class);
@@ -64,65 +67,64 @@ public class Registration extends AppCompatActivity {
             Intent intent = new Intent(Registration.this, Login.class);
             startActivity(intent);
         });
-
-        onmain.setOnClickListener(v -> {
-            Intent intent = new Intent(Registration.this, MainActivity.class);
-            startActivity(intent);
-        });
         submit.setOnClickListener(v -> {
             if (password.getText().length() < 8) {
                 Toast.makeText(this, "Длина пароля должна быть не меньше 8", Toast.LENGTH_SHORT).show();
             } else if (login.getText().toString().equals("")) {
                 Toast.makeText(this, "Поле логина не должно быть пустым", Toast.LENGTH_SHORT).show();
             }
-            new Thread(() -> {
-                try {
-                    URL url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/reg" +
-                            "?username=" + URLEncoder.encode(login.getText().toString(), "UTF-8") +
-                            "&password=" + URLEncoder.encode(password.getText().toString(), "UTF-8") +
-                            "&city=" + URLEncoder.encode(city_name.getText().toString(), "UTF-8"));
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestMethod("POST");
-                    conn.setRequestProperty("Accept", "application/json");
-                    conn.connect();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                    String line;
-                    StringBuilder response = new StringBuilder();
+            else {
+                new Thread(() -> {
+                    try {
+                        URL url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/reg" +
+                                "?username=" + URLEncoder.encode(login.getText().toString(), "UTF-8") +
+                                "&password=" + URLEncoder.encode(password.getText().toString(), "UTF-8") +
+                                "&city=" + URLEncoder.encode(city_name.getText().toString(), "UTF-8"));
+                        Log.d("go to server" , url.toString());
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        conn.setRequestMethod("POST");
+                        conn.setRequestProperty("Accept", "application/json");
+                        conn.connect();
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        String line;
+                        StringBuilder response = new StringBuilder();
 
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
+                        while ((line = reader.readLine()) != null) {
+                            response.append(line);
+                        }
+                        reader.close();
+                        Log.d("go to server" , "все ок");
+                        JSONObject jsonObject = new JSONObject(response.toString());
+                        if (jsonObject.getString("Status").equals("ok")) {
+                            runOnUiThread(() -> {
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                try {
+                                    editor.putInt("user_id", jsonObject.getInt("id"));
+                                } catch (JSONException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                editor.apply();
+                                Toast.makeText(this, "Пользователь зарегистрирован!", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(Registration.this, MainGlobal.class);
+                                startActivity(intent);
+                            });
+                        } else if (jsonObject.getString("Error").equals("username is exits")) {
+                            runOnUiThread(() -> {
+
+                                Toast.makeText(this, "Пользователь с таким логином уже есть", Toast.LENGTH_SHORT).show();
+                            });
+                        } else {
+                            runOnUiThread(() -> {
+                                Toast.makeText(this, "Что-то пошло не так. Попробуйте позже", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.w("go to server", e.toString());
                     }
-                    reader.close();
-                    JSONObject jsonObject = new JSONObject(response.toString());
-                    if (jsonObject.getString("Status").equals("ok")) {
-                        runOnUiThread(() -> {
-                            SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            try {
-                                editor.putInt("user_id", jsonObject.getInt("id"));
-                            } catch (JSONException e) {
-                                throw new RuntimeException(e);
-                            }
-                            editor.apply();
-                            Toast.makeText(this, "Пользователь зарегистрирован!", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(Registration.this, MainActivity.class);
-                            startActivity(intent);
-                        });
-                    } else if (jsonObject.getString("Error").equals("username is exits")) {
-                        runOnUiThread(() -> {
 
-                            Toast.makeText(this, "Пользователь с таким логином уже есть", Toast.LENGTH_SHORT).show();
-                        });
-                    } else {
-                        runOnUiThread(() -> {
-                            Toast.makeText(this, "Что-то пошло не так. Попробуйте позже", Toast.LENGTH_SHORT).show();
-                        });
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }).start();
+                }).start();
+            }
         });
         new Thread(() -> {
             try {

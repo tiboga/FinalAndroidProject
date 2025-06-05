@@ -30,7 +30,7 @@
         android:background="@drawable/linear_layout_reg_login"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView7"
-        tools:layout_editor_absoluteX="0dp" >
+        tools:layout_editor_absoluteX="0dp">
 
     </com.yandex.mapkit.mapview.MapView>
 
@@ -38,10 +38,12 @@
         android:id="@+id/submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/rounded_button"
         android:text="Выбрать метку"
         app:backgroundTint="@color/green_button"
-        tools:layout_editor_absoluteX="100dp"
-        tools:layout_editor_absoluteY="855dp" />
+        app:layout_constraintBottom_toBottomOf="@+id/mapview"
+        app:layout_constraintEnd_toEndOf="@+id/mapview"
+        app:layout_constraintStart_toStartOf="@+id/mapview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
