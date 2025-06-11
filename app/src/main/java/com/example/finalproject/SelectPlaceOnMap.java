@@ -99,9 +99,12 @@ public class SelectPlaceOnMap extends AppCompatActivity {
                 intent = new Intent(SelectPlaceOnMap.this, Registration.class);
                 intent.putExtra("login", intent1.getStringExtra("login"));
                 intent.putExtra("password", intent1.getStringExtra("password"));
+                intent.putExtra("contact_info", intent1.getStringExtra("contact_info"));
             } else if ("add_task".equals(fromActivity)) {
                 intent = new Intent(SelectPlaceOnMap.this, AddTask.class);
                 intent.putExtra("description", intent1.getStringExtra("description"));
+                intent.putExtra("imageUri", intent1.getStringExtra("imageUri"));
+                intent.putExtra("cost", intent1.getStringExtra("cost"));
             } else {
                 intent = new Intent(SelectPlaceOnMap.this, MainGlobal.class);
             }

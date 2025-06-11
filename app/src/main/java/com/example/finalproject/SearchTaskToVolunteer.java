@@ -57,6 +57,7 @@ public class SearchTaskToVolunteer extends AppCompatActivity {
             jsonObject.put("created_on", "0000");
             jsonObject.put("username", "Не указано");
             jsonObject.put("formatted_address", "Нема");
+            jsonObject.put("cost", 0);
             JSONArray data_init = new JSONArray();
             data_init.put(0, jsonObject);
             MyAdapter adapter_init = new MyAdapter(data_init);
@@ -107,7 +108,7 @@ public class SearchTaskToVolunteer extends AppCompatActivity {
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView textView, taskPlace;
+        TextView textView, taskPlace, cost;
         Button button, add_task;
         JSONArray data;
 
@@ -116,6 +117,7 @@ public class SearchTaskToVolunteer extends AppCompatActivity {
             this.data = data;
             textView = itemView.findViewById(R.id.textView);
             taskPlace = itemView.findViewById(R.id.tasksPlace);
+            cost = itemView.findViewById(R.id.cost);
             add_task = itemView.findViewById(R.id.add);
             add_task.setOnClickListener(v -> {
                 new Thread(() -> {
@@ -162,12 +164,14 @@ public class SearchTaskToVolunteer extends AppCompatActivity {
                     try {
                         JSONObject elem = data.getJSONObject(position);
                         BottomInfo bottomSheet = BottomInfo.newInstance(
+                                elem.getInt("id"),
                                 elem.getString("note"),
                                 elem.getBoolean("ended"),
                                 elem.getString("created_on"),
                                 elem.getString("username"),
                                 elem.getDouble("coord_1"),
-                                elem.getDouble("coord_2")
+                                elem.getDouble("coord_2"),
+                                elem.getString("contact_info")
                         );
                         bottomSheet.show(((AppCompatActivity) itemView.getContext()).getSupportFragmentManager(), bottomSheet.getTag());
                     } catch (JSONException e) {
@@ -199,6 +203,7 @@ public class SearchTaskToVolunteer extends AppCompatActivity {
                 JSONObject elem = data.getJSONObject(position);
                 holder.textView.setText(elem.getString("note"));
                 holder.taskPlace.setText(elem.getString("formatted_address"));
+                holder.cost.setText(elem.getString("cost"));
 
             } catch (JSONException e) {
                 throw new RuntimeException(e);

@@ -54,12 +54,14 @@ public class ZakTasks extends AppCompatActivity {
         list_of_task.setLayoutManager(new LinearLayoutManager(this));
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put("id", -1);
             jsonObject.put("note", "Загружается");
             jsonObject.put("coord_1", 0.0);
             jsonObject.put("coord_2", 0.0);
             jsonObject.put("ended", true);
             jsonObject.put("created_on", "0000");
             jsonObject.put("username", "Не указано");
+            jsonObject.put("cost", 0);
             JSONArray data_init = new JSONArray();
             data_init.put(0, jsonObject);
             MyAdapter adapter_init = new MyAdapter(data_init);
@@ -116,7 +118,7 @@ public class ZakTasks extends AppCompatActivity {
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView textView;
+        TextView textView, cost;
         ImageView image;
         Button button;
         JSONArray data;
@@ -126,6 +128,7 @@ public class ZakTasks extends AppCompatActivity {
             this.data = data;
             textView = itemView.findViewById(R.id.textView);
             image = itemView.findViewById(R.id.imageView);
+            cost = itemView.findViewById(R.id.cost);
             button = itemView.findViewById(R.id.button);
             button.setOnClickListener(v -> {
                 int position = getAdapterPosition();
@@ -133,12 +136,14 @@ public class ZakTasks extends AppCompatActivity {
                     try {
                         JSONObject elem = data.getJSONObject(position);
                         BottomInfo bottomSheet = BottomInfo.newInstance(
+                                elem.getInt("id"),
                                 elem.getString("note"),
                                 elem.getBoolean("ended"),
                                 elem.getString("created_on"),
                                 elem.getString("username"),
                                 elem.getDouble("coord_1"),
-                                elem.getDouble("coord_2")
+                                elem.getDouble("coord_2"),
+                                elem.getString("contact_info")
                         );
                         bottomSheet.show(((AppCompatActivity) itemView.getContext()).getSupportFragmentManager(), bottomSheet.getTag());
                     } catch (JSONException e) {
@@ -169,6 +174,7 @@ public class ZakTasks extends AppCompatActivity {
             try {
                 JSONObject elem = data.getJSONObject(position);
                 holder.textView.setText(elem.getString("note"));
+                holder.cost.setText(elem.getString("cost"));
                 if (elem.getBoolean("ended")) {
                     holder.image.setImageResource(R.drawable.ok);
                 }

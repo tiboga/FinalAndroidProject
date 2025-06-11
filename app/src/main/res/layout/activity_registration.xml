@@ -12,7 +12,7 @@
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="75dp"
         android:background="@drawable/linear_layout_reg_login"
         android:gravity="center_horizontal|center_vertical"
         android:orientation="vertical"
@@ -23,7 +23,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="30sp" />
+            android:layout_height="45sp" />
 
         <TextView
             android:id="@+id/textView4"
@@ -38,17 +38,6 @@
         <Space
             android:layout_width="match_parent"
             android:layout_height="15sp" />
-
-        <TextView
-            android:id="@+id/err"
-            android:layout_width="match_parent"
-            android:layout_height="25sp"
-            android:gravity="center"
-            android:textColor="#FF0000" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="10sp" />
 
         <EditText
             android:id="@+id/text"
@@ -87,6 +76,22 @@
             android:layout_width="match_parent"
             android:layout_height="20sp" />
 
+        <EditText
+            android:id="@+id/contact_info"
+            android:layout_width="wrap_content"
+            android:layout_height="40sp"
+            android:layout_gravity="center"
+            android:background="@drawable/rounded_textview"
+            android:ems="10"
+            android:gravity="center"
+            android:hint="Контакт. информация"
+            android:textColor="#000000"
+            android:textColorHint="#434343" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20sp" />
+
         <Button
             android:id="@+id/to_city"
             android:layout_width="210sp"
@@ -115,6 +120,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_textview"
             android:text="Зарегистрироваться"
+            android:textColor="#FFFFFF"
             android:textSize="16sp"
             app:backgroundTint="@color/green_button" />
 
@@ -127,6 +133,7 @@
         android:layout_marginTop="10dp"
         android:background="@drawable/rounded_button"
         android:text="Есть аккаунт? Войти"
+        android:textColor="#FFFFFF"
         app:backgroundTint="@color/green_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

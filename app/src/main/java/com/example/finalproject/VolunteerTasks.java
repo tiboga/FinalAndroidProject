@@ -66,6 +66,7 @@ public class VolunteerTasks extends AppCompatActivity {
             jsonObject.put("ended", true);
             jsonObject.put("created_on", "0000");
             jsonObject.put("username", "Не указано");
+            jsonObject.put("cost", "999");
             JSONArray data_init = new JSONArray();
             data_init.put(0, jsonObject);
             MyAdapter adapter_init = new MyAdapter(data_init);
@@ -122,7 +123,7 @@ public class VolunteerTasks extends AppCompatActivity {
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView textView;
+        TextView textView, cost;
         Button button, check_ended;
         JSONArray data;
 
@@ -130,6 +131,7 @@ public class VolunteerTasks extends AppCompatActivity {
             super(itemView);
             this.data = data;
             textView = itemView.findViewById(R.id.textView);
+            cost = itemView.findViewById(R.id.cost);
             button = itemView.findViewById(R.id.button);
             button.setOnClickListener(v -> {
                 int position = getAdapterPosition();
@@ -137,12 +139,14 @@ public class VolunteerTasks extends AppCompatActivity {
                     try {
                         JSONObject elem = data.getJSONObject(position);
                         BottomInfo bottomSheet = BottomInfo.newInstance(
+                                elem.getInt("id"),
                                 elem.getString("note"),
                                 elem.getBoolean("ended"),
                                 elem.getString("created_on"),
                                 elem.getString("username"),
                                 elem.getDouble("coord_1"),
-                                elem.getDouble("coord_2")
+                                elem.getDouble("coord_2"),
+                                elem.getString("contact_info")
                         );
                         bottomSheet.show(((AppCompatActivity) itemView.getContext()).getSupportFragmentManager(), bottomSheet.getTag());
                     } catch (JSONException e) {
@@ -151,56 +155,21 @@ public class VolunteerTasks extends AppCompatActivity {
                 }
             });
             check_ended = itemView.findViewById(R.id.check_ended);
-            check_ended.setOnClickListener(
-                    v -> {
-                        new Thread(() -> {
-                            URL url = null;
-                            int position = getAdapterPosition();
-                            if (position != RecyclerView.NO_POSITION) {
-                                try {
-                                    JSONObject elem = data.getJSONObject(position);
-                                    try {
-                                        url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/check_task"
-                                                + "?task_id=" + URLEncoder.encode(elem.getString("id"), "UTF-8")
-                                        );
-                                        Log.d("url", url.toString());
-                                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                                        conn.setRequestMethod("POST");
-                                        conn.setRequestProperty("Accept", "application/json");
-                                        conn.connect();
-                                        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                                        String line;
-                                        StringBuilder response = new StringBuilder();
-                                        while ((line = reader.readLine()) != null) {
-                                            response.append(line);
-                                        }
-                                        reader.close();
-                                        JSONObject json = new JSONObject(response.toString());
-                                        Log.d("Status request", json.getString("Status"));
-
-                                        if (json.getString("Status").equals("ok")) {
-                                            runOnUiThread(() -> {
-                                                Toast.makeText(VolunteerTasks.this, "Вы пометили свою задачу выполненной", Toast.LENGTH_SHORT).show();
-                                                });
-                                        } else {
-                                            runOnUiThread(() -> {
-                                                Toast.makeText(itemView.getContext(), "Что-то пошло не так. Попробуйте позже", Toast.LENGTH_SHORT).show();
-                                            });
-                                        }
-                                    } catch (JSONException | IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-                        }
-                        ).start();
+            check_ended.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    try {
+                        JSONObject elem = data.getJSONObject(position);
+                        BottomConfirmation bottomSheet = BottomConfirmation.newInstance(
+                                elem.getInt("id")
+                        );
+                        bottomSheet.show(((AppCompatActivity) itemView.getContext()).getSupportFragmentManager(), bottomSheet.getTag());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-            );
-        }
-    }
+                }
+            });
+        }}
 
     public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
         private JSONArray data;
@@ -222,6 +191,7 @@ public class VolunteerTasks extends AppCompatActivity {
             try {
                 JSONObject elem = data.getJSONObject(position);
                 holder.textView.setText(elem.getString("note"));
+                holder.cost.setText(elem.getString("cost"));
 
             } catch (JSONException e) {
                 throw new RuntimeException(e);

@@ -26,9 +26,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 public class MainGlobal extends AppCompatActivity {
-    Button volunteer_task, zak_task;
-    TextView today_tasks_count, zak_tasks, vol_tasks;
-    ImageButton exit;
+    Button volunteer_task, zak_task, confirm_task;
+    TextView today_tasks_count, zak_tasks, vol_tasks, balance;
+    ImageButton exit, to_my_profile;
     public static boolean isMapKitInitialized = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +48,18 @@ public class MainGlobal extends AppCompatActivity {
             editor.apply();
             startActivity(new Intent(MainGlobal.this, Registration.class));
         });
+        to_my_profile = findViewById(R.id.to_my_profile);
+        to_my_profile.setOnClickListener(v -> {
+            Intent intent= new Intent(MainGlobal.this, Profile.class);
+            String uid = String.valueOf(sharedPreferences.getInt("user_id", -1));
+            intent.putExtra("id", uid);
+            startActivity(intent);
+        });
+        confirm_task = findViewById(R.id.confirm_task);
+        confirm_task.setOnClickListener(v -> {
+            startActivity(new Intent(MainGlobal.this, TasksToConfirmation.class));
+
+        });
         volunteer_task = findViewById(R.id.volunteer_task);
         volunteer_task.setOnClickListener(v -> {
             startActivity(new Intent(MainGlobal.this, VolunteerTasks.class));
@@ -56,6 +68,7 @@ public class MainGlobal extends AppCompatActivity {
         zak_task.setOnClickListener(v -> {
             startActivity(new Intent(MainGlobal.this, ZakTasks.class));
         });
+        balance = findViewById(R.id.balance);
         today_tasks_count = findViewById(R.id.today_task_count);
         new Thread(() -> {
             URL url = null;
@@ -98,7 +111,7 @@ public class MainGlobal extends AppCompatActivity {
             String uid = String.valueOf(sharedPreferences.getInt("user_id", -1));
             URL url = null;
             try {
-                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_count_of_user_tasks"
+                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_count_of_user_tasks_and_balance"
                         + "?uid=" + URLEncoder.encode(uid, "UTF-8")
                 );
                 Log.d("url", url.toString());
@@ -122,7 +135,7 @@ public class MainGlobal extends AppCompatActivity {
                         try {
                             vol_tasks.setText("Принятых заявок: " + json.getString("vol_count"));
                             zak_tasks.setText("Добавленных заявок: " + json.getString("zak_count"));
-
+                            balance.setText(json.getString("balance"));
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
                         }

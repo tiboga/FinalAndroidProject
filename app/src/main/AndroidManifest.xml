@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission
+        android:name="android.permission.READ_MEDIA_IMAGES"
+        tools:ignore="SelectedPhotoAccess" />
 
     <application
         android:allowBackup="true"
@@ -17,6 +20,24 @@
         android:theme="@style/Theme.FinalProject"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".TasksToConfirmation"
+            android:exported="false" />
+        <activity
+            android:name=".Profile"
+            android:exported="false" />
+
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".ImageViewer"
+            android:exported="false" />
         <activity
             android:name=".EndedZakTasks"
             android:exported="false" />
@@ -53,7 +74,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".Hello"
             android:exported="false" />

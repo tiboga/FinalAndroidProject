@@ -1,9 +1,11 @@
 package com.example.finalproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,20 +23,23 @@ import com.yandex.mapkit.map.PlacemarkMapObject;
 import com.yandex.mapkit.mapview.MapView;
 
 public class BottomInfo extends BottomSheetDialogFragment {
-    private TextView note, ended, created_on, username_vol;
+    private TextView note, ended, created_on, username_vol, contact_info;
+    private Button get_images;
     private MapView mapView;
     private PlacemarkMapObject placemark;
     private Point centerPoint;
 
-    public static BottomInfo newInstance(String note, Boolean ended, String created_on, String username, Double coord_1, Double coord_2) {
+    public static BottomInfo newInstance(Integer id, String note, Boolean ended, String created_on, String username, Double coord_1, Double coord_2, String contact_info) {
         BottomInfo fragment = new BottomInfo();
         Bundle args = new Bundle();
+        args.putInt("id", id);
         args.putString("note", note);
         args.putBoolean("ended", ended);
         args.putString("created_on", created_on);
         args.putString("username", username);
         args.putDouble("coord_1", coord_1);
         args.putDouble("coord_2", coord_2);
+        args.putString("contact_info", contact_info);
         fragment.setArguments(args);
         return fragment;
     }
@@ -60,18 +65,25 @@ public class BottomInfo extends BottomSheetDialogFragment {
         ended = view.findViewById(R.id.ended);
         created_on = view.findViewById(R.id.created_on);
         username_vol = view.findViewById(R.id.username_vol);
+        get_images = view.findViewById(R.id.get_photos);
+        contact_info = view.findViewById(R.id.contacts);
 
         Bundle args = getArguments();
         if (args != null) {
             note.setText(args.getString("note"));
             boolean ended_val = args.getBoolean("ended");
-            String ended_text = ended_val ? "✅ Задача выполнена" : "❌ Задача еще не выполнена";
+            String ended_text = ended_val ? "✅ Выполнена" : "❌ Не выполнена";
             ended.setText(ended_text);
             created_on.setText(args.getString("created_on"));
             username_vol.setText(args.getString("username"));
-
+            contact_info.setText(args.getString("contact_info"));
             mapView = view.findViewById(R.id.mapview);
             centerPoint = new Point(args.getDouble("coord_2"), args.getDouble("coord_1"));
+            get_images.setOnClickListener(v -> {
+                Intent intent = new Intent(getActivity(), ImageViewer.class);
+                intent.putExtra("id", args.getInt("id"));
+                startActivity(intent);
+            });
         }
 
         return view;

@@ -18,28 +18,50 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageButton
+            android:id="@+id/to_my_profile"
+            android:layout_width="75dp"
+            android:layout_height="50dp"
+            android:layout_weight="0"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/flat_profile"
+            android:layout_gravity="center"
+            android:backgroundTint="#D6EDD6"/>
+
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/balance"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="3sp"
             android:layout_weight="1"
-            android:gravity="center"
-            android:paddingStart="30dp"
-            android:text="Главная"
-            android:textAlignment="textStart"
-            android:textColor="#000"
-            android:textSize="48sp" />
+            android:gravity="right"
+            android:text="0"
+            android:textColor="#000000"
+            android:textSize="30sp" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="10dp"
+            android:layout_height="45dp"
+            android:layout_gravity="center"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0.25"
+            android:backgroundTint="#D6EDD6"
+            app:srcCompat="@drawable/chgcoins" />
 
         <ImageButton
             android:id="@+id/exit"
-            android:layout_width="0dp"
+            android:layout_width="10dp"
             android:layout_height="25dp"
-            android:layout_weight="0.5"
             android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
             android:layout_marginBottom="20dp"
+            android:layout_weight="0.25"
             android:background="#D6EDD6"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/exit" />
+            app:srcCompat="@drawable/exit"
+            android:layout_gravity="center"/>
 
     </LinearLayout>
 
@@ -53,7 +75,7 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
         <Space
             android:layout_width="match_parent"
-            android:layout_height="100sp"/>
+            android:layout_height="50sp"/>
 
         <TextView
             android:id="@+id/textView9"
@@ -78,7 +100,7 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="100sp"/>
+            android:layout_height="50sp"/>
 
         <TextView
             android:id="@+id/textView8"
@@ -105,15 +127,17 @@
         <Space
             android:layout_width="match_parent"
             android:layout_height="20sp" />
+
         <Button
             android:id="@+id/volunteer_task"
-            android:layout_gravity="center"
             android:layout_width="250sp"
             android:layout_height="wrap_content"
-            app:backgroundTint="@color/green_button"
+            android:layout_gravity="center"
             android:background="@drawable/rounded_button"
             android:text="Принятые заявки"
-            android:textSize="20sp"/>
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            app:backgroundTint="@color/green_button" />
         <Space
             android:layout_width="match_parent"
             android:layout_height="30sp" />
@@ -143,15 +167,30 @@
         <Space
             android:layout_width="match_parent"
             android:layout_height="20sp" />
+
         <Button
             android:id="@+id/zak_task"
-            android:layout_gravity="center"
             android:layout_width="250sp"
             android:layout_height="wrap_content"
-            app:backgroundTint="@color/green_button"
+            android:layout_gravity="center"
             android:background="@drawable/rounded_button"
             android:text="Ваши заявки"
-            android:textSize="20sp"/>
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            app:backgroundTint="@color/green_button" />
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20sp" />
+        <Button
+            android:id="@+id/confirm_task"
+            android:layout_width="250sp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/rounded_button"
+            android:text="Подтверждение заявок"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            app:backgroundTint="@color/green_button" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

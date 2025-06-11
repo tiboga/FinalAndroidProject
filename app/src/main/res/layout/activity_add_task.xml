@@ -12,33 +12,24 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="100dp"
+        android:layout_height="600dp"
+        android:layout_marginTop="50dp"
         android:background="@drawable/linear_layout_reg_login"
         android:gravity="center_horizontal|center_vertical"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView15"
         tools:layout_editor_absoluteX="1dp">
 
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="30sp" />
 
         <TextView
             android:id="@+id/textView4"
             android:layout_width="match_parent"
-            android:layout_height="84dp"
-            android:text="Добавление задачи"
+            android:layout_height="105dp"
+            android:text="Добавление\nзадачи"
             android:textAlignment="center"
             android:textColor="#000"
             android:textSize="40sp"
             android:textStyle="bold" />
-
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="50sp" />
 
         <EditText
             android:id="@+id/description"
@@ -47,12 +38,30 @@
             android:layout_gravity="center"
             android:background="@drawable/rounded_textview"
             android:ems="10"
-            android:gravity="center"
             android:hapticFeedbackEnabled="true"
+            android:paddingLeft="10dp"
             android:hint="Описание"
             android:inputType="textEmailAddress"
             android:textColor="#000"
-            android:textColorHint="#434343" />
+            android:textColorHint="#434343"
+            />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20sp" />
+
+        <EditText
+            android:id="@+id/cost"
+            android:layout_width="wrap_content"
+            android:layout_height="40sp"
+            android:ems="10"
+            android:inputType="number"
+            android:paddingLeft="10dp"
+            android:hint="Стоимость уборки"
+            android:layout_gravity="center"
+            android:textColorHint="#434343"
+            android:textColor="#000"
+            android:background="@drawable/rounded_textview"/>
 
         <Space
             android:layout_width="match_parent"
@@ -61,25 +70,57 @@
 
         <Button
             android:id="@+id/to_city"
-            android:layout_width="wrap_content"
+            android:layout_width="200sp"
             android:layout_height="wrap_content"
-            android:text="Выбрать метку на карте"
             android:background="@drawable/rounded_button"
-            app:backgroundTint="@color/green_button"/>
+            android:text="Выбрать метку на карте"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="@color/green_button" />
 
         <TextView
             android:id="@+id/info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="10sp"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textColor="#000000" />
+
+        <Button
+            android:id="@+id/add_image"
+            android:layout_width="200sp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_textview"
+            android:text="Выбрать картинку"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            app:backgroundTint="@color/green_button" />
+
+        <TextView
+            android:id="@+id/info2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="10sp"
+            android:textAlignment="center"
+            android:textColor="#000000" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            tools:srcCompat="@drawable/template_image" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20sp" />
 
         <Button
             android:id="@+id/add"
             android:layout_width="200sp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
             android:background="@drawable/rounded_textview"
             android:text="Добавить задачу"
+            android:textColor="#FFFFFF"
             android:textSize="16sp"
             app:backgroundTint="@color/green_button" />
 
@@ -90,7 +131,7 @@
         android:layout_width="299dp"
         android:layout_height="89dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="79dp"
+        android:layout_marginTop="10dp"
         android:text="Чистый"
         android:textColor="#FFF"
         android:textSize="80sp"
@@ -101,11 +142,12 @@
         android:id="@+id/textView15"
         android:layout_width="226dp"
         android:layout_height="97dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="3dp"
         android:layout_marginEnd="40dp"
         android:text="Город"
         android:textColor="#35682D"
         android:textSize="80sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView14" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

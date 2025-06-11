@@ -41,7 +41,7 @@
 
         <EditText
             android:id="@+id/text"
-            android:layout_width="wrap_content"
+            android:layout_width="200sp"
             android:layout_height="40sp"
             android:layout_gravity="center"
             android:background="@drawable/rounded_textview"
@@ -59,7 +59,7 @@
 
         <EditText
             android:id="@+id/password"
-            android:layout_width="wrap_content"
+            android:layout_width="200sp"
             android:layout_height="40sp"
             android:layout_gravity="center"
             android:background="@drawable/rounded_textview"
@@ -83,6 +83,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_textview"
             android:text="Войти"
+            android:textColor="#FFFFFF"
             android:textSize="16sp"
             app:backgroundTint="@color/green_button" />
 
@@ -96,6 +97,7 @@
         android:background="@drawable/rounded_button"
         android:gravity="center"
         android:text="Нет аккаунта? Зарегистрироваться"
+        android:textColor="#FFFFFF"
         app:backgroundTint="@color/green_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

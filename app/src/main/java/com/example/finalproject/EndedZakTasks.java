@@ -60,6 +60,7 @@ public class EndedZakTasks extends AppCompatActivity {
             jsonObject.put("ended", true);
             jsonObject.put("created_on", "0000");
             jsonObject.put("username", "Не указано");
+            jsonObject.put("cost", 0);
             JSONArray data_init = new JSONArray();
             data_init.put(0, jsonObject);
             MyAdapter adapter_init = new MyAdapter(data_init);
@@ -133,12 +134,14 @@ public class EndedZakTasks extends AppCompatActivity {
                     try {
                         JSONObject elem = data.getJSONObject(position);
                         BottomInfo bottomSheet = BottomInfo.newInstance(
+                                elem.getInt("id"),
                                 elem.getString("note"),
                                 elem.getBoolean("ended"),
                                 elem.getString("created_on"),
                                 elem.getString("username"),
                                 elem.getDouble("coord_1"),
-                                elem.getDouble("coord_2")
+                                elem.getDouble("coord_2"),
+                                elem.getString("contact_info")
                         );
                         bottomSheet.show(((AppCompatActivity) itemView.getContext()).getSupportFragmentManager(), bottomSheet.getTag());
                     } catch (JSONException e) {

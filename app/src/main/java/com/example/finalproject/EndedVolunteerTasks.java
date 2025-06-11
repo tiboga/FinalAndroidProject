@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 public class EndedVolunteerTasks extends AppCompatActivity {
-    Button onmain, add_new_task;
+    Button onmain, add_new_task, not_ended_tasks;
     RecyclerView list_of_task;
 
     @Override
@@ -55,6 +55,10 @@ public class EndedVolunteerTasks extends AppCompatActivity {
         add_new_task.setOnClickListener(v -> {
             startActivity(new Intent(EndedVolunteerTasks.this, SearchTaskToVolunteer.class));
         });
+        not_ended_tasks = findViewById(R.id.not_ended_tasks);
+        not_ended_tasks.setOnClickListener(v -> {
+            startActivity(new Intent(EndedVolunteerTasks.this, VolunteerTasks.class));
+        });
         list_of_task = findViewById(R.id.list_of_tasks);
         list_of_task.setLayoutManager(new LinearLayoutManager(this));
         JSONObject jsonObject = new JSONObject();
@@ -66,6 +70,7 @@ public class EndedVolunteerTasks extends AppCompatActivity {
             jsonObject.put("ended", true);
             jsonObject.put("created_on", "0000");
             jsonObject.put("username", "Не указано");
+            jsonObject.put("cost", 0);
             JSONArray data_init = new JSONArray();
             data_init.put(0, jsonObject);
             MyAdapter adapter_init = new MyAdapter(data_init);
@@ -118,7 +123,7 @@ public class EndedVolunteerTasks extends AppCompatActivity {
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView textView;
+        TextView textView, cost;
         Button button, check_ended;
         JSONArray data;
 
@@ -126,6 +131,7 @@ public class EndedVolunteerTasks extends AppCompatActivity {
             super(itemView);
             this.data = data;
             textView = itemView.findViewById(R.id.textView);
+            cost = itemView.findViewById(R.id.cost);
             button = itemView.findViewById(R.id.button);
             button.setOnClickListener(v -> {
                 int position = getAdapterPosition();
@@ -133,12 +139,14 @@ public class EndedVolunteerTasks extends AppCompatActivity {
                     try {
                         JSONObject elem = data.getJSONObject(position);
                         BottomInfo bottomSheet = BottomInfo.newInstance(
+                                elem.getInt("id"),
                                 elem.getString("note"),
                                 elem.getBoolean("ended"),
                                 elem.getString("created_on"),
                                 elem.getString("username"),
                                 elem.getDouble("coord_1"),
-                                elem.getDouble("coord_2")
+                                elem.getDouble("coord_2"),
+                                elem.getString("contact_info")
                         );
                         bottomSheet.show(((AppCompatActivity) itemView.getContext()).getSupportFragmentManager(), bottomSheet.getTag());
                     } catch (JSONException e) {
@@ -218,6 +226,7 @@ public class EndedVolunteerTasks extends AppCompatActivity {
             try {
                 JSONObject elem = data.getJSONObject(position);
                 holder.textView.setText(elem.getString("note"));
+                holder.cost.setText(elem.getString("cost"));
 
             } catch (JSONException e) {
                 throw new RuntimeException(e);
