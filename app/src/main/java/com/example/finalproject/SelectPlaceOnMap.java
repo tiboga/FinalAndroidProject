@@ -30,13 +30,20 @@ public class SelectPlaceOnMap extends AppCompatActivity {
     private InputListener inputListener;
     private Button submit;
 
-
+    /**
+     *
+     * @param outState
+     */
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean("haveApiKey", true);
     }
 
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -60,7 +67,7 @@ public class SelectPlaceOnMap extends AppCompatActivity {
         String fromActivity = intent1.getStringExtra("activity_name");
         mapView = findViewById(R.id.mapview);
         Point centerPoint = new Point(55.748557, 37.613901);
-        mapView.getMap().move(
+        mapView.getMap().move(  // отцентровка на Москву
                 new CameraPosition(centerPoint, 14.0f, 0.0f, 0.0f),
                 new Animation(Animation.Type.SMOOTH, 5),
                 null
@@ -89,14 +96,14 @@ public class SelectPlaceOnMap extends AppCompatActivity {
                 return;
             }
 
-            double latitude = placemark.getGeometry().getLatitude();
+            double latitude = placemark.getGeometry().getLatitude(); // определение координат точки
             double longitude = placemark.getGeometry().getLongitude();
 
             Intent intent;
             if ("main".equals(fromActivity)) {
                 intent = new Intent(SelectPlaceOnMap.this, MainGlobal.class);
             } else if ("registration".equals(fromActivity)) {
-                intent = new Intent(SelectPlaceOnMap.this, Registration.class);
+                intent = new Intent(SelectPlaceOnMap.this, Registration.class); // передача сохраненных данных формы
                 intent.putExtra("login", intent1.getStringExtra("login"));
                 intent.putExtra("password", intent1.getStringExtra("password"));
                 intent.putExtra("contact_info", intent1.getStringExtra("contact_info"));
@@ -117,6 +124,9 @@ public class SelectPlaceOnMap extends AppCompatActivity {
         });
     }
 
+    /**
+     *
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -124,6 +134,9 @@ public class SelectPlaceOnMap extends AppCompatActivity {
         mapView.onStart();
     }
 
+    /**
+     *
+     */
     @Override
     protected void onStop() {
         mapView.onStop();

@@ -33,14 +33,15 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 public class TasksToConfirmation extends AppCompatActivity {
     Button onmain;
     RecyclerView list_of_task;
 
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +57,7 @@ public class TasksToConfirmation extends AppCompatActivity {
         list_of_task.setLayoutManager(new LinearLayoutManager(this));
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("id", -1);
+            jsonObject.put("id", -1); // элемент загрузочный
             jsonObject.put("note", "Загружается");
             JSONArray data_init = new JSONArray();
             data_init.put(0, jsonObject);
@@ -70,7 +71,7 @@ public class TasksToConfirmation extends AppCompatActivity {
             String uid = String.valueOf(sharedPreferences.getInt("user_id", -1));
             URL url = null;
             try {
-                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_tasks_to_confirmation"
+                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_tasks_to_confirmation" // получение добавленных на проверку заявок
                         + "?uid=" + URLEncoder.encode(uid, "UTF-8")
                 );
                 Log.d("url", url.toString());
@@ -86,7 +87,7 @@ public class TasksToConfirmation extends AppCompatActivity {
                 }
                 reader.close();
                 JSONObject json = new JSONObject(response.toString());
-                Log.d("Status request", json.getString("Status"));
+                Log.d("Status request", json.getString("Status")); // парсинг ответа в json
 
                 if (json.getString("Status").equals("ok")) {
                     JSONArray data = json.getJSONArray("list");
@@ -113,10 +114,15 @@ public class TasksToConfirmation extends AppCompatActivity {
         Button report, confirm, add_to_revision;
         JSONArray data;
 
+        /**
+         *
+         * @param itemView
+         * @param data
+         */
         public MyViewHolder(View itemView, JSONArray data) {
             super(itemView);
             this.data = data;
-            textView = itemView.findViewById(R.id.textView);
+            textView = itemView.findViewById(R.id.name);
             add_to_revision = itemView.findViewById(R.id.add_to_revision);
             add_to_revision.setOnClickListener(v -> {
                 int position = getAdapterPosition();
@@ -127,7 +133,7 @@ public class TasksToConfirmation extends AppCompatActivity {
                         new Thread(() -> {
                             URL url = null;
                             try {
-                                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/task_to_revision"
+                                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/task_to_revision"  // отбраковка заявки
                                         + "?task_id=" + URLEncoder.encode(String.valueOf(task_id), "UTF-8")
                                 );
                                 Log.d("url", url.toString());
@@ -149,15 +155,7 @@ public class TasksToConfirmation extends AppCompatActivity {
                                 } else {
                                     runOnUiThread(() -> Toast.makeText(TasksToConfirmation.this, "Что-то пошло не так. Попробуйте позже", Toast.LENGTH_SHORT).show());
                                 }
-                            } catch (UnsupportedEncodingException e) {
-                                throw new RuntimeException(e);
-                            } catch (ProtocolException e) {
-                                throw new RuntimeException(e);
-                            } catch (JSONException e) {
-                                throw new RuntimeException(e);
-                            } catch (MalformedURLException e) {
-                                throw new RuntimeException(e);
-                            } catch (IOException e) {
+                            } catch (JSONException | IOException e) {
                                 throw new RuntimeException(e);
                             }
                         }).start();
@@ -171,8 +169,7 @@ public class TasksToConfirmation extends AppCompatActivity {
                 int position = getAdapterPosition();
                 if (position != RecyclerView.NO_POSITION) {
                     try {
-                        JSONObject elem = data.getJSONObject(position);
-
+                        JSONObject elem = data.getJSONObject(position); // информация о заявке
                         Intent intent = new Intent(TasksToConfirmation.this, ImageViewer.class);
                         intent.putExtra("id", elem.getInt("id"));
                         startActivity(intent);
@@ -191,7 +188,7 @@ public class TasksToConfirmation extends AppCompatActivity {
                         new Thread(() -> {
                             URL url = null;
                             try {
-                                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/check_task"
+                                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/check_task" // принятие заявки
                                         + "?task_id=" + URLEncoder.encode(String.valueOf(task_id), "UTF-8")
                                 );
                                 Log.d("url", url.toString());
@@ -206,22 +203,14 @@ public class TasksToConfirmation extends AppCompatActivity {
                                     response.append(line);
                                 }
                                 reader.close();
-                                JSONObject json = new JSONObject(response.toString());
+                                JSONObject json = new JSONObject(response.toString()); // парсинг ответа в json
                                 Log.d("Status request", json.getString("Status"));
                                 if (json.getString("Status").equals("ok")){
                                     runOnUiThread(() -> Toast.makeText(TasksToConfirmation.this, "Задача одобрена", Toast.LENGTH_SHORT).show());
                                 } else {
                                     runOnUiThread(() -> Toast.makeText(TasksToConfirmation.this, "Что-то пошло не так. Попробуйте позже", Toast.LENGTH_SHORT).show());
                                 }
-                            } catch (UnsupportedEncodingException e) {
-                                throw new RuntimeException(e);
-                            } catch (ProtocolException e) {
-                                throw new RuntimeException(e);
-                            } catch (JSONException e) {
-                                throw new RuntimeException(e);
-                            } catch (MalformedURLException e) {
-                                throw new RuntimeException(e);
-                            } catch (IOException e) {
+                            } catch (JSONException | IOException e) {
                                 throw new RuntimeException(e);
                             }
                         }).start();
@@ -235,10 +224,22 @@ public class TasksToConfirmation extends AppCompatActivity {
     public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
         private JSONArray data;
 
+        /**
+         *
+         * @param data
+         */
         public MyAdapter(JSONArray data) {
             this.data = data;
         }
 
+        /**
+         *
+         * @param parent The ViewGroup into which the new View will be added after it is bound to
+         *               an adapter position.
+         * @param viewType The view type of the new View.
+         *
+         * @return
+         */
         @NonNull
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -246,6 +247,12 @@ public class TasksToConfirmation extends AppCompatActivity {
             return new TasksToConfirmation.MyViewHolder(view, data);
         }
 
+        /**
+         *
+         * @param holder The ViewHolder which should be updated to represent the contents of the
+         *        item at the given position in the data set.
+         * @param position The position of the item within the adapter's data set.
+         */
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
@@ -258,6 +265,10 @@ public class TasksToConfirmation extends AppCompatActivity {
 
         }
 
+        /**
+         *
+         * @return
+         */
         @Override
         public int getItemCount() {
             return data.length();

@@ -32,6 +32,11 @@ public class Profile extends AppCompatActivity {
     TextView count_placed, count_completed, balance,city;
     EditText name, contact_info;
     Button change_password, save_changes, to_zak_task, to_vol_task;
+
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +58,7 @@ public class Profile extends AppCompatActivity {
             new Thread(() -> {
                 URL url = null;
                 try {
-                    url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/change_profile/" +
+                    url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/change_profile/" +  // обновление информации о пользователе
                             intent.getStringExtra("id" ) + "?name=" +
                             URLEncoder.encode(name.getText().toString(), "UTF-8") + "&contact_info=" +
                             URLEncoder.encode(contact_info.getText().toString(), "UTF-8"));
@@ -75,13 +80,7 @@ public class Profile extends AppCompatActivity {
                     } else {
                         runOnUiThread(() -> Toast.makeText(Profile.this, "Что-то пошло не так. Повторите позже", Toast.LENGTH_SHORT).show());
                     }
-                } catch (ProtocolException e) {
-                    throw new RuntimeException(e);
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
-                } catch (IOException e) {
+                } catch (JSONException | IOException e) {
                     throw new RuntimeException(e);
                 }
             }).start();
@@ -91,7 +90,7 @@ public class Profile extends AppCompatActivity {
             SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
             String uid = String.valueOf(sharedPreferences.getInt("user_id", -1));
             BottomChangePassword bottomSheet = BottomChangePassword.newInstance(uid);
-            bottomSheet.show(Profile.this.getSupportFragmentManager(), bottomSheet.getTag());
+            bottomSheet.show(Profile.this.getSupportFragmentManager(), bottomSheet.getTag());  // запуск фрагмента для смены пароля
         });
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -109,7 +108,7 @@ public class Profile extends AppCompatActivity {
         new Thread(() -> {
             URL url = null;
             try {
-                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_profile/" + intent.getStringExtra("id"));
+                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_profile/" + intent.getStringExtra("id"));  // получение информации о пользователе
                 Log.d("url", url.toString());
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -129,7 +128,7 @@ public class Profile extends AppCompatActivity {
                     JSONObject info = json.getJSONObject("info");
                     runOnUiThread(() -> {
                         try {
-                            name.setText(info.getString("name"));
+                            name.setText(info.getString("name"));  // выводим на фронтенд
                             count_completed.setText(info.getString("count_completed"));
                             count_placed.setText(info.getString("count_placed"));
                             balance.setText(info.getString("balance"));

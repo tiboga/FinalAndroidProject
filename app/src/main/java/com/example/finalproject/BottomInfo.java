@@ -29,8 +29,20 @@ public class BottomInfo extends BottomSheetDialogFragment {
     private PlacemarkMapObject placemark;
     private Point centerPoint;
 
+    /**
+     *
+     * @param id
+     * @param note
+     * @param ended
+     * @param created_on
+     * @param username
+     * @param coord_1
+     * @param coord_2
+     * @param contact_info
+     * @return
+     */
     public static BottomInfo newInstance(Integer id, String note, Boolean ended, String created_on, String username, Double coord_1, Double coord_2, String contact_info) {
-        BottomInfo fragment = new BottomInfo();
+        BottomInfo fragment = new BottomInfo();  // сохраняем аргументы
         Bundle args = new Bundle();
         args.putInt("id", id);
         args.putString("note", note);
@@ -44,12 +56,17 @@ public class BottomInfo extends BottomSheetDialogFragment {
         return fragment;
     }
 
+    /**
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AppData appData = AppData.getInstance();
         Boolean value = appData.getGlobalVariable();
-        if (!value) {
+        if (!value) { // активация яндекс карт, если еще не инициализированы
             MapKitFactory.setApiKey("0125ed02-7d2f-4c15-b356-4165d801ff31");
             appData.setGlobalVariable(true);
             MapKitFactory.initialize(requireContext());
@@ -57,6 +74,18 @@ public class BottomInfo extends BottomSheetDialogFragment {
         }
     }
 
+    /**
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bottom_info, container, false);
@@ -68,9 +97,9 @@ public class BottomInfo extends BottomSheetDialogFragment {
         get_images = view.findViewById(R.id.get_photos);
         contact_info = view.findViewById(R.id.contacts);
 
-        Bundle args = getArguments();
+        Bundle args = getArguments();  // получаем аргументы, переданные при запуске
         if (args != null) {
-            note.setText(args.getString("note"));
+            note.setText(args.getString("note"));   // ставим значения-информацию об заявке
             boolean ended_val = args.getBoolean("ended");
             String ended_text = ended_val ? "✅ Выполнена" : "❌ Не выполнена";
             ended.setText(ended_text);
@@ -79,7 +108,7 @@ public class BottomInfo extends BottomSheetDialogFragment {
             contact_info.setText(args.getString("contact_info"));
             mapView = view.findViewById(R.id.mapview);
             centerPoint = new Point(args.getDouble("coord_2"), args.getDouble("coord_1"));
-            get_images.setOnClickListener(v -> {
+            get_images.setOnClickListener(v -> {  // переход на просмотр фотографий
                 Intent intent = new Intent(getActivity(), ImageViewer.class);
                 intent.putExtra("id", args.getInt("id"));
                 startActivity(intent);
@@ -89,23 +118,32 @@ public class BottomInfo extends BottomSheetDialogFragment {
         return view;
     }
 
+    /**
+     *
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (mapView != null && centerPoint != null) {
-            mapView.getMap().move(
+            mapView.getMap().move(  // анимация
                     new CameraPosition(centerPoint, 14.0f, 0.0f, 0.0f),
                     new Animation(Animation.Type.SMOOTH, 5),
                     null
             );
             mapView.getMap().setZoomGesturesEnabled(true);
             MapObjectCollection mapObjects = mapView.getMap().getMapObjects();
-            mapObjects.clear(); // Очищаем старые объекты
-            placemark = mapObjects.addPlacemark(centerPoint);
-            placemark.setDraggable(false);
+            mapObjects.clear(); // очищаем старые объекты
+            placemark = mapObjects.addPlacemark(centerPoint);  // добавляем точку заявки на карту
+            placemark.setDraggable(false);  // запрещаем двигать метку
         }
     }
 
+    /**
+     *
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -122,6 +160,9 @@ public class BottomInfo extends BottomSheetDialogFragment {
         }
     }
 
+    /**
+     *
+     */
     @Override
     public void onStop() {
         if (mapView != null) {

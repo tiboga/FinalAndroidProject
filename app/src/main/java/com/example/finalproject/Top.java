@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +20,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButtonToggleGroup;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,9 +33,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
-public class EndedZakTasks extends AppCompatActivity {
-    Button onmain, add_new_task,notendedtasks;
+public class Top extends AppCompatActivity {
+    Button onmain;
     RecyclerView list_of_task;
+    TextView top_info;
+    String object_ordering = "balance";
+    MaterialButtonToggleGroup toggleGroup;
 
     /**
      *
@@ -42,50 +46,78 @@ public class EndedZakTasks extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);  // инициализация
+        super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_ended_zak_tasks);
+        setContentView(R.layout.activity_top);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        add_new_task = findViewById(R.id.add_new_task);
-        add_new_task.setOnClickListener(v -> {
-            startActivity(new Intent(EndedZakTasks.this, AddTask.class));
+        MaterialButtonToggleGroup toggleGroup = findViewById(R.id.toggleGroup);
+        toggleGroup.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
+            @Override
+            public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
+                if (isChecked) {
+                    if (checkedId == R.id.balance) {
+                        object_ordering = "balance";
+                        top_info.setText("Топ по балансу"); // перезагрузка топа по балансу
+                        refreshAdapter();
+                    } else if (checkedId == R.id.count_placed) {
+                        object_ordering = "count_placed";
+                        top_info.setText("Топ по добавленным заявкам");
+                        refreshAdapter(); // перезагрузка топа по добавленным заявкам
+                    } else {
+                        object_ordering = "count_completed";
+                        top_info.setText("Топ по выполненным заявкам");
+                        refreshAdapter(); // перезагрузка топа по выполненным заявкам
+                    }
+                }
+            }
         });
         list_of_task = findViewById(R.id.list_of_tasks);
         list_of_task.setLayoutManager(new LinearLayoutManager(this));
+        top_info = findViewById(R.id.top_info);
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("note", "Загружается");  // загрузочный элемент
-            jsonObject.put("coord_1", 0.0);
-            jsonObject.put("coord_2", 0.0);
-            jsonObject.put("ended", true);
-            jsonObject.put("created_on", "0000");
-            jsonObject.put("username", "Не указано");
-            jsonObject.put("cost", 0);
+            jsonObject.put("index", "0");  // загрузочный элемент
+            jsonObject.put("name", "Загружается");
+            jsonObject.put("balance", "0");
+            jsonObject.put("count_placed", "0");
+            jsonObject.put("count_completed", "0");
             JSONArray data_init = new JSONArray();
             data_init.put(0, jsonObject);
             MyAdapter adapter_init = new MyAdapter(data_init);
-            list_of_task.setAdapter(adapter_init);  // инициализация адаптера с загрузочным элементом
+            list_of_task.setAdapter(adapter_init);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
+
+        onmain = findViewById(R.id.onmain);
+        onmain.setOnClickListener(v -> {
+            startActivity(new Intent(Top.this, MainGlobal.class));
+        });
+        refreshAdapter();
+    }
+
+    /**
+     *
+     */
+    public void refreshAdapter(){
         new Thread(() -> {
             SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
             String uid = String.valueOf(sharedPreferences.getInt("user_id", -1));
             URL url = null;
-            try { // получение списка законченных добавленных заявок
-                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_user_task"
-                        + "?uid=" + URLEncoder.encode(uid, "UTF-8")
-                        + "&ended=" + URLEncoder.encode("true", "UTF-8")
-                ); // сборка ссылки
+            try {
+                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_top_users/"  // ссылка для получения топа
+                        + URLEncoder.encode(object_ordering, "UTF-8") + "/"  // по объекту object_ordering
+                        + URLEncoder.encode(uid, "UTF-8")
+                );
                 Log.d("url", url.toString());
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("Accept", "application/json");
-                conn.connect(); // соединение
+                conn.connect();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String line;
                 StringBuilder response = new StringBuilder();
@@ -97,10 +129,10 @@ public class EndedZakTasks extends AppCompatActivity {
                 Log.d("Status request", json.getString("Status"));
 
                 if (json.getString("Status").equals("ok")) {
-                    JSONArray data = json.getJSONArray("list");
+                    JSONArray data = json.getJSONArray("users");
                     MyAdapter adapter = new MyAdapter(data);
                     runOnUiThread(() -> {
-                        list_of_task.setAdapter(adapter);  // если правильно загрузился, то отправляем в адаптер
+                        list_of_task.setAdapter(adapter); // ставим адаптер с нормальными данными
                     });
                 } else {
                     Toast.makeText(this, "Что-то пошло не так. Попробуйте позже", Toast.LENGTH_SHORT).show();
@@ -110,20 +142,9 @@ public class EndedZakTasks extends AppCompatActivity {
             }
 
         }).start();
-        onmain = findViewById(R.id.onmain);
-        onmain.setOnClickListener(v -> {
-            startActivity(new Intent(EndedZakTasks.this, MainGlobal.class));
-        });
-        notendedtasks = findViewById(R.id.not_ended_tasks);
-        notendedtasks.setOnClickListener(v -> {
-            startActivity(new Intent(EndedZakTasks.this, ZakTasks.class));
-        });
     }
-
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView textView;
-        ImageView image;
-        Button button;
+        TextView index, name, balance, count_placed, count_completed;
         JSONArray data;
 
         /**
@@ -131,35 +152,16 @@ public class EndedZakTasks extends AppCompatActivity {
          * @param itemView
          * @param data
          */
-        public MyViewHolder(@NonNull View itemView, JSONArray data) {
+        public MyViewHolder(View itemView, JSONArray data) {
             super(itemView);
-            this.data = data;
-            textView = itemView.findViewById(R.id.name);
-            image = itemView.findViewById(R.id.imageView);
-            button = itemView.findViewById(R.id.button);
-            button.setOnClickListener(v -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    try {
-                        JSONObject elem = data.getJSONObject(position);
-                        BottomInfo bottomSheet = BottomInfo.newInstance( // фрагмент с информацией
-                                elem.getInt("id"),
-                                elem.getString("note"),
-                                elem.getBoolean("ended"),
-                                elem.getString("created_on"),
-                                elem.getString("username"),
-                                elem.getDouble("coord_1"),
-                                elem.getDouble("coord_2"),
-                                elem.getString("contact_info")
-                        );
-                        bottomSheet.show(((AppCompatActivity) itemView.getContext()).getSupportFragmentManager(), bottomSheet.getTag());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
-    }
+            this.data = data; // инициализация
+            index = itemView.findViewById(R.id.index);
+            name = itemView.findViewById(R.id.name);
+            balance = itemView.findViewById(R.id.balance);
+            count_placed = itemView.findViewById(R.id.count_placed);
+            count_completed = itemView.findViewById(R.id.count_completed);
+
+        }}
 
     public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
         private JSONArray data;
@@ -183,8 +185,8 @@ public class EndedZakTasks extends AppCompatActivity {
         @NonNull
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_of_task_list, parent, false);
-            return new MyViewHolder(view, data);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_of_top, parent, false);
+            return new Top.MyViewHolder(view, data);
         }
 
         /**
@@ -197,11 +199,13 @@ public class EndedZakTasks extends AppCompatActivity {
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
             try {
-                JSONObject elem = data.getJSONObject(position);
-                holder.textView.setText(elem.getString("note"));
-                if (elem.getBoolean("ended")) {
-                    holder.image.setImageResource(R.drawable.ok);
-                }
+                JSONObject elem = data.getJSONObject(position); // ставим информацию
+                holder.index.setText(elem.getString("index"));
+                holder.name.setText(elem.getString("name"));
+                holder.balance.setText(elem.getString("balance"));
+                holder.count_placed.setText(elem.getString("count_placed"));
+                holder.count_completed.setText(elem.getString("count_completed"));
+
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }

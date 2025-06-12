@@ -26,10 +26,15 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 public class MainGlobal extends AppCompatActivity {
-    Button volunteer_task, zak_task, confirm_task;
+    Button volunteer_task, zak_task, confirm_task, to_top;
     TextView today_tasks_count, zak_tasks, vol_tasks, balance;
     ImageButton exit, to_my_profile;
     public static boolean isMapKitInitialized = false;
+
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,11 +48,13 @@ public class MainGlobal extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         exit = findViewById(R.id.exit);
         exit.setOnClickListener(v -> {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
+            SharedPreferences.Editor editor = sharedPreferences.edit();  // переходы на разные активности
             editor.putInt("user_id", -1);
             editor.apply();
-            startActivity(new Intent(MainGlobal.this, Registration.class));
+            startActivity(new Intent(MainGlobal.this, Login.class));
         });
+        to_top = findViewById(R.id.top);
+        to_top.setOnClickListener(v -> startActivity(new Intent(MainGlobal.this, Top.class)));
         to_my_profile = findViewById(R.id.to_my_profile);
         to_my_profile.setOnClickListener(v -> {
             Intent intent= new Intent(MainGlobal.this, Profile.class);
@@ -73,7 +80,7 @@ public class MainGlobal extends AppCompatActivity {
         new Thread(() -> {
             URL url = null;
             try {
-                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_count_of_today_tasks");
+                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_count_of_today_tasks");  // получаем кол-во сегодня добавленных заявок
                 Log.d("url", url.toString());
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -111,7 +118,7 @@ public class MainGlobal extends AppCompatActivity {
             String uid = String.valueOf(sharedPreferences.getInt("user_id", -1));
             URL url = null;
             try {
-                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_count_of_user_tasks_and_balance"
+                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_count_of_user_tasks_and_balance" // получаем кол-во добавленных и принятых заявок пользователя и баланс
                         + "?uid=" + URLEncoder.encode(uid, "UTF-8")
                 );
                 Log.d("url", url.toString());
@@ -133,7 +140,7 @@ public class MainGlobal extends AppCompatActivity {
 
                     runOnUiThread(() -> {
                         try {
-                            vol_tasks.setText("Принятых заявок: " + json.getString("vol_count"));
+                            vol_tasks.setText("Принятых заявок: " + json.getString("vol_count"));  // ставим полученную информацию
                             zak_tasks.setText("Добавленных заявок: " + json.getString("zak_count"));
                             balance.setText(json.getString("balance"));
                         } catch (JSONException e) {

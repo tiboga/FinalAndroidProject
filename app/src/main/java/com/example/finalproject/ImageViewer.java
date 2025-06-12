@@ -23,6 +23,11 @@ import okhttp3.Response;
 public class ImageViewer extends AppCompatActivity {
 
     ImageView before_image, after_image;
+
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +46,7 @@ public class ImageViewer extends AppCompatActivity {
                 Intent intent = getIntent();
                 Request request = new Request.Builder()
                         .url("http://" + BuildConfig.IP_PC + ":5050/api/get_image/before/" + intent.getIntExtra("id", -1))
-                        .build();
+                        .build();  // получаем ссылку на скачивание картинок, прикрепленных к заявке заказчиком
 
                 Response response = client.newCall(request).execute();
                 if (response.isSuccessful()) {
@@ -49,7 +54,7 @@ public class ImageViewer extends AppCompatActivity {
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                     if (bitmap != null) {
                         runOnUiThread(() -> {
-                            before_image.setImageBitmap(bitmap);
+                            before_image.setImageBitmap(bitmap);  // скачиваем и устанавливаем
                         });
                     }
                 } else {
@@ -74,7 +79,7 @@ public class ImageViewer extends AppCompatActivity {
                 Intent intent = getIntent();
                 Request request = new Request.Builder()
                         .url("http://" + BuildConfig.IP_PC + ":5050/api/get_image/after/" + intent.getIntExtra("id", -1))
-                        .build();
+                        .build();// получаем ссылку на скачивание картинок, прикрепленных к заявке исполнителем
 
                 Response response = client.newCall(request).execute();
                 if (response.isSuccessful()) {
@@ -82,7 +87,7 @@ public class ImageViewer extends AppCompatActivity {
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                     if (bitmap != null) {
                         runOnUiThread(() -> {
-                            after_image.setImageBitmap(bitmap);
+                            after_image.setImageBitmap(bitmap);// скачиваем и устанавливаем
                         });
                     }
                 } else {

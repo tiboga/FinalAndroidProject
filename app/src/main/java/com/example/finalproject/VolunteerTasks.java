@@ -27,20 +27,18 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 public class VolunteerTasks extends AppCompatActivity {
     Button onmain, add_new_task, on_ended;
     RecyclerView list_of_task;
 
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +57,7 @@ public class VolunteerTasks extends AppCompatActivity {
         list_of_task.setLayoutManager(new LinearLayoutManager(this));
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("id", -1);
+            jsonObject.put("id", -1); // загрузочный элемент
             jsonObject.put("note", "Загружается");
             jsonObject.put("coord_1", 0.0);
             jsonObject.put("coord_2", 0.0);
@@ -79,7 +77,7 @@ public class VolunteerTasks extends AppCompatActivity {
             String uid = String.valueOf(sharedPreferences.getInt("user_id", -1));
             URL url = null;
             try {
-                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_volunteer_task"
+                url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/get_volunteer_task" // получение невыполненных заявок принятых
                         + "?uid=" + URLEncoder.encode(uid, "UTF-8")
                         + "&ended=" + URLEncoder.encode("false", "UTF-8")
                 );
@@ -96,13 +94,13 @@ public class VolunteerTasks extends AppCompatActivity {
                 }
                 reader.close();
                 JSONObject json = new JSONObject(response.toString());
-                Log.d("Status request", json.getString("Status"));
+                Log.d("Status request", json.getString("Status")); // получение json ответа
 
                 if (json.getString("Status").equals("ok")) {
                     JSONArray data = json.getJSONArray("list");
                     MyAdapter adapter = new MyAdapter(data);
                     runOnUiThread(() -> {
-                        list_of_task.setAdapter(adapter);
+                        list_of_task.setAdapter(adapter); // инициализация адаптера с нормальными данными
                     });
                 } else {
                     Toast.makeText(this, "Что-то пошло не так. Попробуйте позже", Toast.LENGTH_SHORT).show();
@@ -127,11 +125,16 @@ public class VolunteerTasks extends AppCompatActivity {
         Button button, check_ended;
         JSONArray data;
 
+        /**
+         *
+         * @param itemView
+         * @param data
+         */
         public MyViewHolder(View itemView, JSONArray data) {
             super(itemView);
             this.data = data;
-            textView = itemView.findViewById(R.id.textView);
-            cost = itemView.findViewById(R.id.cost);
+            textView = itemView.findViewById(R.id.name);
+            cost = itemView.findViewById(R.id.balance);
             button = itemView.findViewById(R.id.button);
             button.setOnClickListener(v -> {
                 int position = getAdapterPosition();
@@ -139,7 +142,7 @@ public class VolunteerTasks extends AppCompatActivity {
                     try {
                         JSONObject elem = data.getJSONObject(position);
                         BottomInfo bottomSheet = BottomInfo.newInstance(
-                                elem.getInt("id"),
+                                elem.getInt("id"), // фрагмент с информацией
                                 elem.getString("note"),
                                 elem.getBoolean("ended"),
                                 elem.getString("created_on"),
@@ -161,7 +164,7 @@ public class VolunteerTasks extends AppCompatActivity {
                     try {
                         JSONObject elem = data.getJSONObject(position);
                         BottomConfirmation bottomSheet = BottomConfirmation.newInstance(
-                                elem.getInt("id")
+                                elem.getInt("id") // запуск фрагмента с выбором фотографии для отчета
                         );
                         bottomSheet.show(((AppCompatActivity) itemView.getContext()).getSupportFragmentManager(), bottomSheet.getTag());
                     } catch (JSONException e) {
@@ -178,6 +181,14 @@ public class VolunteerTasks extends AppCompatActivity {
             this.data = data;
         }
 
+        /**
+         *
+         * @param parent The ViewGroup into which the new View will be added after it is bound to
+         *               an adapter position.
+         * @param viewType The view type of the new View.
+         *
+         * @return
+         */
         @NonNull
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -185,6 +196,12 @@ public class VolunteerTasks extends AppCompatActivity {
             return new VolunteerTasks.MyViewHolder(view, data);
         }
 
+        /**
+         *
+         * @param holder The ViewHolder which should be updated to represent the contents of the
+         *        item at the given position in the data set.
+         * @param position The position of the item within the adapter's data set.
+         */
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
@@ -198,6 +215,11 @@ public class VolunteerTasks extends AppCompatActivity {
             }
 
         }
+
+        /**
+         *
+         * @return
+         */
 
         @Override
         public int getItemCount() {

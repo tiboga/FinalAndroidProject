@@ -39,6 +39,10 @@ public class Registration extends AppCompatActivity {
     EditText login, password, contact_info;
     TextView city_name;
 
+    /**
+     *
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,11 +53,7 @@ public class Registration extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        String uid = String.valueOf(sharedPreferences.getInt("user_id", -1));
-        if (Integer.parseInt(uid) != -1){
-            startActivity(new Intent(Registration.this, MainGlobal.class));
-        }
+
         to_city = findViewById(R.id.to_city);
         to_login = findViewById(R.id.to_login);
         login = findViewById(R.id.text);
@@ -63,6 +63,7 @@ public class Registration extends AppCompatActivity {
         submit = findViewById(R.id.submit);
         to_city.setOnClickListener(v -> {
             Intent intent = new Intent(Registration.this, SelectPlaceOnMap.class);
+            // сохранение данных для выбора метки и последующего восстанавления формы
             intent.putExtra("activity_name", "registration");
             intent.putExtra("login", login.getText().toString());
             intent.putExtra("password", password.getText().toString());
@@ -89,7 +90,7 @@ public class Registration extends AppCompatActivity {
                 new Thread(() -> {
                     try {
 
-                        URL url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/reg" +
+                        URL url = new URL("http://" + BuildConfig.IP_PC + ":5050/api/reg" +  // регистрация
                                 "?username=" + URLEncoder.encode(login.getText().toString(), "UTF-8") +
                                 "&password=" + URLEncoder.encode(password.getText().toString(), "UTF-8") +
                                 "&city=" + URLEncoder.encode(city_name.getText().toString(), "UTF-8") +
@@ -110,56 +111,12 @@ public class Registration extends AppCompatActivity {
                         Log.d("go to server" , "все ок");
                         JSONObject jsonObject = new JSONObject(response.toString());
                         if (jsonObject.getString("Status").equals("ok")) {
-                            FirebaseMessaging.getInstance().getToken()
-                                    .addOnCompleteListener(task -> {
-                                        if (task.isSuccessful()) {
-                                            String token = task.getResult();
-                                            Log.d("FCM Token", token);
-
-                                            new Thread(() -> {
-                                                try {
-                                                    URL url_for_add_fcm_token = new URL("http://" + BuildConfig.IP_PC + ":5050/api/add_fcm_token_to_user" +
-                                                            "?token=" + URLEncoder.encode(token, "UTF-8") +
-                                                            "&uid=" + URLEncoder.encode(String.valueOf(jsonObject.getInt("id")), "UTF-8")
-                                                    );
-                                                    Log.d("go to server", url_for_add_fcm_token.toString());
-                                                    HttpURLConnection conn_for_add_fcm_token = (HttpURLConnection) url_for_add_fcm_token.openConnection();
-                                                    conn_for_add_fcm_token.setRequestMethod("POST");
-                                                    conn_for_add_fcm_token.setRequestProperty("Accept", "application/json");
-                                                    conn_for_add_fcm_token.connect();
-
-                                                    int responseCode = conn_for_add_fcm_token.getResponseCode();
-                                                    if (responseCode == HttpURLConnection.HTTP_OK) {
-                                                        BufferedReader reader_for_add_fcm_token = new BufferedReader(new InputStreamReader(conn_for_add_fcm_token.getInputStream()));
-                                                        String line_for_add_fcm_token;
-                                                        StringBuilder response_for_add_fcm_token = new StringBuilder();
-
-                                                        while ((line_for_add_fcm_token = reader_for_add_fcm_token.readLine()) != null) {
-                                                            response_for_add_fcm_token.append(line_for_add_fcm_token);
-                                                        }
-                                                        reader_for_add_fcm_token.close();
-
-                                                        JSONObject jsonObject_for_add_fcm_token = new JSONObject(response_for_add_fcm_token.toString());
-                                                        if (!jsonObject_for_add_fcm_token.getString("Status").equals("ok")) {
-                                                            runOnUiThread(() -> Toast.makeText(Registration.this, "Не удалось сохранить токен уведомлений", Toast.LENGTH_SHORT).show());
-                                                        }
-                                                    } else {
-                                                        runOnUiThread(() -> Toast.makeText(Registration.this, "Ошибка сервера при сохранении токена", Toast.LENGTH_SHORT).show());
-                                                    }
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
-                                                    runOnUiThread(() -> Toast.makeText(Registration.this, "Ошибка при отправке токена", Toast.LENGTH_SHORT).show());
-                                                }
-                                            }).start();
-                                        } else {
-                                            Log.e("FCM Token", "Ошибка получения токена", task.getException());
-                                        }
-                                    });
-
                             runOnUiThread(() -> {
+                                SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 try {
                                     editor.putInt("user_id", jsonObject.getInt("id"));
+                                    // сохранение id зарегистрированного пользователя
                                     editor.apply();
                                     Toast.makeText(Registration.this, "Пользователь зарегистрирован!", Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(Registration.this, MainGlobal.class);
@@ -191,7 +148,7 @@ public class Registration extends AppCompatActivity {
 
                 Intent intent1 = getIntent();
 
-                String point_latitude = intent1.getStringExtra("point_latitude");
+                String point_latitude = intent1.getStringExtra("point_latitude");  // восстановление формы после выбора места на карте
                 String point_longitude = intent1.getStringExtra("point_longitude");
                 String login_str = intent1.getStringExtra("login");
                 String password1_str = intent1.getStringExtra("password");
@@ -210,7 +167,7 @@ public class Registration extends AppCompatActivity {
 
                 URL url = new URL("https://geocode-maps.yandex.ru/1.x/?apikey=216f2281-a0bc-4411-ac29-2723d14122fa&geocode=" + point_longitude + "," + point_latitude + "&format=json");
                 Log.d("url for city name", "https://geocode-maps.yandex.ru/1.x/?apikey=216f2281-a0bc-4411-ac29-2723d14122fa&geocode=" + point_longitude + "," + point_latitude + "&format=json");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();  // получаем город, в котором стоит метка выбранная
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("Accept", "application/json");
                 conn.connect();
@@ -236,7 +193,7 @@ public class Registration extends AppCompatActivity {
                 String cityString = null;
                 for (int i = 0; i < cityArr.length(); i++) {
                     if (cityArr.getJSONObject(i).getString("kind").equals("locality")) {
-                        cityString = cityArr.getJSONObject(i).getString("name");
+                        cityString = cityArr.getJSONObject(i).getString("name"); // красивая строка с именем города
                         break;
                     }
                 }

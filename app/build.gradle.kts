@@ -13,7 +13,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("String", "IP_PC", "\"192.168.206.161\"")
+        buildConfigField("String", "IP_PC", "\"84.201.170.230\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures {
@@ -35,6 +35,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.material.vlatestversion)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.messaging)
